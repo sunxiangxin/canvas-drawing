@@ -7,6 +7,7 @@ class DrawingBoard{
     }
 
     painting(ele){
+        ele.style.cursor='hand'
         this.dom = ele;
         if(!this.ctx){
             this.ctx=ele.getContext("2d");  

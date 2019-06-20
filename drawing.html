@@ -13,6 +13,7 @@
             .box>.canvasWrap{
                 position: relative;
                 margin: 20px auto;
+                /* cursor: crosshair; */
             }
             .box>.canvasWrap>.clear{
                 width: max-content;
@@ -82,11 +83,14 @@
                 text-align: center;
                 line-height: 30px;
             }
+            .penStyle{
+                cursor: url("./image/pen.ico"),default;
+            }
         </style>
     </head>
     <body>
         <div class="box">
-            <div class="canvasWrap">
+            <div class="canvasWrap penStyle">
                 <canvas id="canvas" width="500" height="400" style="border: 6px solid #000"></canvas>
                 <div class="clear">清除</div>
                 <div class="chooseColor">
@@ -106,6 +110,7 @@
         <script type="text/javascript">
 
             //获得画布元素
+            var box = document.querySelector(".box");
             var canvas = document.getElementById("canvas");
             var chooseColor = document.querySelector(".chooseColor");
             var chooseWidth = document.querySelector(".chooseWidth");
@@ -141,8 +146,7 @@
             download.onclick = function(){
                 board.downloadFile(canvas);
             }
-
-
+            
         </script>
     </body>
 </html>
