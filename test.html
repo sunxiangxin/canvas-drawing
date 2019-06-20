@@ -1,0 +1,153 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=400">
+	<title> canvas手写毛笔字效果 </title>
+<style type="text/css">
+body {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	background-color: #936;
+}
+#canvasId {
+	background-color: #FFd;
+}
+
+.button {
+	width: 140px;
+	height: 60px;
+	font-size: 20px;
+}
+</style>
+</head>
+<body>
+<h1>手写毛笔字效果-手机版</h1>
+<canvas id="canvasId" width="400" height="500"></canvas><br />
+<input type="button" value="全部清除" class="button" onclick="hw.clear();" />
+<input type="button" value="清除最后一笔" class="button" onclick="hw.historyBack();" />
+<script type="text/javascript">
+function Handwriting(id) {
+	this.canvas = document.getElementById(id);
+	this.ctx = this.canvas.getContext("2d");
+	var on = ("ontouchstart" in document)? {
+		start: "touchstart", move: "touchmove", end: "touchend"
+	} : {
+		start: "mousedown", move: "mousemove", end: "mouseup"
+	};
+	this.canvas.addEventListener(on.start, this.downEvent.bind(this), false);
+	this.canvas.addEventListener(on.move, this.moveEvent.bind(this), false);
+	this.canvas.addEventListener(on.end, this.upEvent.bind(this), false);
+	this.canvas.addEventListener("contextmenu", function(e){ e.preventDefault() }, false);
+	this.moveFlag = false;
+	this.upof = {};
+	this.radius = 0;
+	this.has = [];
+	this.startOf = null;
+	this.lineMax = 30;
+	this.lineMin = 3;
+	this.linePressure = 1;
+	this.smoothness = 80;
+	this.history = [];
+	this.setColor("rgba(0,0,0,0.25)");
+}
+
+Handwriting.prototype.clear = function () {
+	this.history = [];
+	this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+}
+
+Handwriting.prototype.historyBack = function () {
+	this.history.pop();
+	this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+	for (var i = 0; i < this.history.length; i++) {
+		var h = this.history[i];
+		for (var j = 0; j < h.length; j+=3) {
+			this.ctx.beginPath();
+			this.ctx.arc(h[j],h[j+1],h[j+2],0,2*Math.PI,true);
+			this.ctx.fill();
+		}
+	}
+}
+
+Handwriting.prototype.downEvent = function (e) {
+	this.moveFlag = true;
+	this.has = [];
+	this.upof = this.getXY(e);
+	this.startOf = this.upof;
+}
+
+Handwriting.prototype.moveEvent = function (e) {
+	if (!this.moveFlag)
+		return;
+	e.preventDefault();
+	var of = this.getXY(e);
+	var up = this.upof;
+	var ur = this.radius;
+	this.has.unshift({time:new Date().getTime() ,dis:this.distance(up,of)});
+	var dis = 0;
+	var time = 0;
+	for (var n = 0; n < this.has.length-1; n++) {
+		dis += this.has[n].dis;
+		time += this.has[n].time-this.has[n+1].time;
+		if (dis>this.smoothness)
+			break;
+	}
+	var or = Math.min(time/dis*this.linePressure+this.lineMin , this.lineMax) / 2;
+	this.radius = or;
+	this.upof = of;
+	if (dis<7)
+		return;
+	if (this.startOf) {
+		up = this.startOf;
+		ur = or;
+		this.startOf = null;
+		this.history.push([]);
+	}
+	var len = Math.ceil(this.distance(up,of)/2);
+	for (var i = 0; i < len; i++) {
+		var x = up.x + (of.x-up.x)/len*i;
+		var y = up.y + (of.y-up.y)/len*i;
+		var r = ur + (or-ur)/len*i;
+		this.ctx.beginPath();
+		this.ctx.arc(x,y,r,0,2*Math.PI,true);
+		this.ctx.fill();
+		this.history[this.history.length-1].push(x,y,r);
+	}
+}
+
+Handwriting.prototype.upEvent = function (e) {
+	this.moveFlag = false;
+}
+
+Handwriting.prototype.getXY = function (e) {
+	var et = e.touches? e.touches[0] : e;
+	var x = et.clientX;
+	var y = et.clientY;
+	return {
+		x : x - this.canvas.offsetLeft + (document.body.scrollLeft || document.documentElement.scrollLeft),
+		y : y - this.canvas.offsetTop  + (document.body.scrollTop || document.documentElement.scrollTop)
+	}
+}
+
+Handwriting.prototype.distance = function (a,b) {
+	var x = b.x-a.x , y = b.y-a.y;
+	return Math.sqrt(x*x+y*y);
+}
+
+Handwriting.prototype.setColor = function (c) {
+	this.ctx.fillStyle = c;
+}
+
+var hw = new Handwriting("canvasId");
+hw.setColor("rgba(0,0,210,0.4)");//设置画笔颜色
+hw.lineMax = 10;//设置画笔最大线宽
+hw.lineMin = 4;//设置画笔最小线宽
+hw.linePressure = 1.2;//设置画笔笔触压力
+hw.smoothness = 30;//设置画笔笔触大小变化的平滑度。
+</script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Drawing</title>
+        <style>
+            *{padding: 0;margin: 0;}
+            .box{
+                width: 100%;
+                height: 100%;
+                display: flex;
+            }
+            .box>.canvasWrap{
+                position: relative;
+                margin: 20px auto;
+            }
+            .box>.canvasWrap>.clear{
+                width: max-content;
+                height: 20px;
+                background: yellowgreen;
+                border-radius: 100px;
+                padding: 5px 15px;
+                position: absolute;
+                bottom: -5px;
+                left: 80px;
+            }
+            .box>.canvasWrap>.chooseColor{
+                display: flex;
+                position: absolute;
+                bottom: -5px;
+                left: 180px;
+            }
+            .box>.canvasWrap>.chooseColor>.colorOne{
+                width: 30px;
+                height: 30px;
+                border: 1px solid #000;
+                margin-right: 1px;
+                box-sizing: border-box;
+            }
+            .box>.canvasWrap>.chooseColor>div:nth-child(1){
+                background: pink;                
+            }
+            .box>.canvasWrap>.chooseColor>div:nth-child(2){
+                background: green;
+            }
+            .chooseWidth{
+                display: flex;
+                position: absolute;
+                bottom: -5px;
+                left: 330px;
+            }
+            .chooseWidth>.widthOne{
+                width: 30px;
+                height: 30px;
+                line-height: 30px;
+                border: 1px solid #000;
+                margin-right: 1px;
+                box-sizing: border-box;
+                background: #000;
+                color: aliceblue;
+                border-radius: 50%;
+                text-align: center;
+            }
+            .rubber{
+                width: 15px;
+                height: 20px;
+                border: 1px solid #000;
+                background: #fff;
+                position: absolute;
+                bottom: -3px;
+                left: 480px;
+            }
+            .download{
+                width: 50px;
+                height: 30px;
+                position: absolute;
+                bottom: -5px;
+                left: 15px;
+                border: 1px solid #000;
+                background: #eee;
+                border-radius: 100px;
+                text-align: center;
+                line-height: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="box">
+            <div class="canvasWrap">
+                <canvas id="canvas" width="500" height="400" style="border: 6px solid #000"></canvas>
+                <div class="clear">清除</div>
+                <div class="chooseColor">
+                    <div class="colorOne" color="pink"></div>
+                    <div class="colorOne" color="green"></div>
+                </div>
+                <div class="chooseWidth">
+                    <div class="widthOne" width="1">I</div>
+                    <div class="widthOne" width="4">II</div>
+                    <div class="widthOne" width="8">III</div>
+                </div>
+                <div class="rubber"></div>
+                <div class="download">save</div>
+            </div>
+        </div>
+        <script src="./board.js"></script>
+        <script type="text/javascript">
+
+            //获得画布元素
+            var canvas = document.getElementById("canvas");
+            var chooseColor = document.querySelector(".chooseColor");
+            var chooseWidth = document.querySelector(".chooseWidth");
+            var clear = document.querySelector(".clear");
+            var rubber = document.querySelector(".rubber");
+            var download = document.querySelector(".download");
+
+            var board = new DrawingBoard();
+            board.painting(canvas);
+           //清除画布
+            clear.onclick = function(){
+                board.cleanBoard(canvas);
+            }
+
+            //设置颜色
+            chooseColor.onclick = function(e){
+                var penColor = e.target.attributes["color"].nodeValue;
+                board.chooseColor(penColor);
+            }    
+
+            //设置宽度
+            chooseWidth.onclick = function(e){
+                var width = e.target.attributes["width"].nodeValue;
+                board.chooseWidth(width);
+            }
+
+            //橡皮
+            rubber.onclick = function(e){
+                board.chooseColor('white');
+            }
+            
+            //保存画布
+            download.onclick = function(){
+                board.downloadFile(canvas);
+            }
+
+
+        </script>
+    </body>
+</html>
