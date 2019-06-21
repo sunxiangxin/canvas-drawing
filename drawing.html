@@ -13,7 +13,7 @@
             .box>.canvasWrap{
                 position: relative;
                 margin: 20px auto;
-                /* cursor: crosshair; */
+                /* cursor: pointer; */
             }
             .box>.canvasWrap>.clear{
                 width: max-content;
@@ -86,24 +86,31 @@
             .penStyle{
                 cursor: url("./image/pen.ico"),default;
             }
+            .rubberStyle{
+                /* cursor: url("./image/pen.ico"),default; */
+                cursor: crosshair;
+            }
+            .pointCursor{
+                cursor: pointer;
+            }
         </style>
     </head>
     <body>
         <div class="box">
-            <div class="canvasWrap penStyle">
+            <div class="canvasWrap">
                 <canvas id="canvas" width="500" height="400" style="border: 6px solid #000"></canvas>
-                <div class="clear">清除</div>
-                <div class="chooseColor">
+                <div class="clear pointCursor">清除</div>
+                <div class="chooseColor pointCursor">
                     <div class="colorOne" color="pink"></div>
                     <div class="colorOne" color="green"></div>
                 </div>
-                <div class="chooseWidth">
+                <div class="chooseWidth pointCursor">
                     <div class="widthOne" width="1">I</div>
                     <div class="widthOne" width="4">II</div>
                     <div class="widthOne" width="8">III</div>
                 </div>
-                <div class="rubber"></div>
-                <div class="download">save</div>
+                <div class="rubber pointCursor"></div>
+                <div class="download pointCursor">save</div>
             </div>
         </div>
         <script src="./board.js"></script>
@@ -129,6 +136,7 @@
             chooseColor.onclick = function(e){
                 var penColor = e.target.attributes["color"].nodeValue;
                 board.chooseColor(penColor);
+                board.chooseCursor(canvas,'pen')
             }    
 
             //设置宽度
@@ -140,6 +148,7 @@
             //橡皮
             rubber.onclick = function(e){
                 board.chooseColor('white');
+                board.chooseCursor(canvas,'rubber')
             }
             
             //保存画布
